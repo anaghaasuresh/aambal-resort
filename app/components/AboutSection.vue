@@ -264,16 +264,15 @@ function closeVideo() {
 }
 
 .about-content h2 {
-  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  font-size: clamp(2rem, 3.5vw, 3rem);
   font-weight: 500;
-  color:#0c2b0d;
-  /* color: var(--color-primary-dark); */
+  color:#082809;
   line-height: 1.3;
   margin-bottom: var(--space-md);
 }
 
 .about-content h2 .highlight {
-  background: linear-gradient(90deg, #15431a 0%, #0d4b05 100%);
+  background: linear-gradient(90deg, #113a16 0%, #0b4304 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -338,7 +337,7 @@ function closeVideo() {
   }
 
   .about-media {
-    height: 550px;
+    height: 750px;
   }
 }
 </style>

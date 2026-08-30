@@ -56,9 +56,9 @@
 
 <script setup>
 
-import hero1 from '~/assets/css/img/aambal_main.png'
-import hero2 from '~/assets/css/img/aambal_side.png'
-import hero3 from '~/assets/css/img/aambal_side2.png' 
+import hero1 from '~/assets/css/img/aambal_mainn.png'
+import hero2 from '~/assets/css/img/aambal_sidee.png'
+import hero3 from '~/assets/css/img/aambal_side22.png' 
 
 import aambalLogo from '~/assets/css/img/aambal_logo1.png'
 const centerSlide = computed(() => {
@@ -283,7 +283,7 @@ function resetTilt() {
   align-items: center;
   justify-content: center;
   position: relative;
-  top: -25px;
+  top: -190px;
 }
 
 .logo-tag img {
@@ -294,13 +294,13 @@ function resetTilt() {
 
 
 .card-content h1 {
-  font-family: var(--font-body);
+  font-family: var(--font-heading);
 
     background: linear-gradient(
     90deg,
-    #e2f79e 0%,
-    #9ac654 50%,
-    #9eed65 100%
+    #062007 0%,
+    #062007 50%,
+    #062007 100%
   );
 
   -webkit-background-clip: text;
