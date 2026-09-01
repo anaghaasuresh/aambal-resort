@@ -87,13 +87,24 @@ function closeVideo() {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Quintessential&display=swap');
 
-.about {
+/* .about {
   background: linear-gradient(
     135deg,
     #143a0c 0%,
     #636c2c 50%,
     #143a0c 100%
   );
+  padding-block: var(--space-xl);
+} */
+.about {
+  background: linear-gradient(
+    to right,
+    #143a0c 0%,
+    #1d5013 30%,
+    #e5dbad 30%,
+    #f5e38f 100%
+  );
+
   padding-block: var(--space-xl);
 }
 
@@ -310,8 +321,8 @@ function closeVideo() {
   display: flex;
   align-items: flex-start;
   gap: 0.6rem;
-  color: #b08c49;
-  /* color: var(--color-text); */
+  /* color: #b08c49; */
+  color: #31533A;
   line-height: 1.6;
 }
 
