@@ -73,9 +73,9 @@
 </template>
 
 <script setup>
-import img1 from '~/assets/css/img/aambal_main.png'
-import img2 from '~/assets/css/img/aambal_side.png'
-import img3 from '~/assets/css/img/aambal_side2.png'
+import img1 from '~/assets/css/img/aambal_mainn.png'
+import img2 from '~/assets/css/img/aambal_sidee.png'
+import img3 from '~/assets/css/img/aambal_side22.png'
 
 const activeIndex = ref(0)
 
@@ -148,7 +148,7 @@ const current = computed(() => tabs.value[activeIndex.value])
 <style scoped>
 .specials {
   position: relative;
-  background: #ffe491; 
+  background: #fffb8b; 
   padding-block: var(--space-xl);
   overflow: hidden;
 }
@@ -211,17 +211,17 @@ const current = computed(() => tabs.value[activeIndex.value])
   display: block;
   font-style: italic;
   font-weight: 600;
-  background: linear-gradient(90deg, #E9BF6F 0%, #C79C52 100%);
+  background: linear-gradient(90deg, #ad8231 0%, #C79C52 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .body-text {
-  color: var(--color-text-muted);
+  color: #0e3a0f;
   line-height: 1.75;
   margin-bottom: var(--space-sm);
-  max-width: 520px;
+  max-width: 580px;
 }
 
 .nearby-content h4 {
@@ -299,7 +299,7 @@ const current = computed(() => tabs.value[activeIndex.value])
   width: 100%;
   height: 100%;
   object-fit: cover;
-  min-height: 420px;
+  min-height: 580px;
 }
 
 /* Number nav */
