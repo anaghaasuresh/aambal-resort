@@ -72,11 +72,27 @@ function toggleArrows() {
 }
 
 const slides = ref([
-  { id: 1, image: hero1, tag: aambalLogo, isLogo: true, title: 'Aambal Resort', subtitle: 'Tranquility on the water' },
+  {
+    id: 1,
+    image: hero1,
+    tag: aambalLogo,
+    isLogo: true,
+    title: 'Embrace the Serenity',
+  },
 
-  { id: 2, image: hero2, tag: '#Events', isLogo: false, title: 'Celebrate in Style', subtitle: 'Placeholder subtitle' },
+  {
+    id: 2,
+    image: hero2,
+    isLogo: false,
+    title: 'Nature Meets Luxury',
+  },
 
-  { id: 3, image: hero3, tag: '#Nature', isLogo: false, title: 'Escape to Green', subtitle: 'Placeholder subtitle' },
+  {
+    id: 3,
+    image: hero3,
+    isLogo: false,
+    title: 'Tranquility on the water',
+  },
 ])
 
 const activeIndex = ref(0)
@@ -170,6 +186,7 @@ function resetTilt() {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Yesteryear&display=swap');
 .hero {
   position: relative;
   height: 100vh;
@@ -256,7 +273,7 @@ function resetTilt() {
 
 .card-content {
   position: absolute;
-  bottom: 15%;
+  bottom: 23%;
   left: 50%;
   transform: translateX(-50%);
   width: 150%;
@@ -266,14 +283,6 @@ function resetTilt() {
   color: var(--color-white);
 }
 
-.tag {
-  display: inline-block;
-  color: #F4F1DF;
-  border: 1px solid var(--color-white);
-  padding: 0.2rem 0.6rem;
-  font-size: var(--fs-small);
-  margin-bottom: var(--space-sm);
-}
 /* LOGO ONLY — no box */
 .logo-tag {
   border: none;
@@ -283,35 +292,24 @@ function resetTilt() {
   align-items: center;
   justify-content: center;
   position: relative;
-  top: -190px;
+  top: -160px;
 }
 
 .logo-tag img {
-  width: 300px;
+  width: 400px;
   height: auto;
   display: block;
 }
 
 
 .card-content h1 {
-  font-family: var(--font-heading);
-
-    background: linear-gradient(
-    90deg,
-    #062007 0%,
-    #062007 50%,
-    #062007 100%
-  );
-
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  
-  color: var(--color-white);
-  font-size: 5rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-family: 'Yesteryear', cursive;
+  /* color: #fffaa4; */
+  color: #f7f17e;
+  font-size: clamp(3rem, 5vw, 5rem);
+  font-weight: 100;
+  text-transform: none;
+  letter-spacing: 0.1em;
   line-height: 1.1;
   margin-bottom: var(--space-sm);
 }

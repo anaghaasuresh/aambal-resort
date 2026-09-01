@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import logo from '~/assets/css/img/aambal_logo.png'
+import logo from '~/assets/css/img/aamballogoonly.png'
 const isScrolled = ref(false)
 const isMenuOpen = ref(false)
 
