@@ -1,5 +1,6 @@
 <template>
   <section class="why-choose" id="why-choose">
+   <div class="bg-arc" aria-hidden="true"></div>
     <div class="grain-overlay" aria-hidden="true"></div>
     <div class="container why-choose-inner">
       <div class="section-header">
@@ -31,11 +32,6 @@
             <div class="card-divider"></div>
             <p>{{ card.text }}</p>
           </div>
-          <span class="corner-leaf" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C12 2 8 6 8 10C8 12.2 9.8 14 12 14C14.2 14 16 12.2 16 10C16 6 12 2 12 2Z" fill="currentColor"/>
-            </svg>
-          </span>
         </div>
       </div>
     </div>
@@ -99,9 +95,9 @@ const cards = ref([
   padding-block: var(--space-xl);
   background: linear-gradient(
     135deg,
-    #bcb597 0%,
-    #a6b06a 50%,
-    #bcb597 100%
+    #143a0c 0%,
+    #143a0c 50%, 
+    #143a0c 100%
   );
   overflow: hidden;
 }
@@ -132,9 +128,9 @@ const cards = ref([
 
 .section-header h2 {
   font-family: var(--font-heading);
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: clamp(2.8rem, 5vw, 2.99rem);
   font-weight: 500;
-  color: #123a0a;
+  color: #f5efd7;
   margin-bottom: var(--space-sm);
 }
 
@@ -221,7 +217,7 @@ const cards = ref([
   justify-content: center;
   padding: var(--space-md) var(--space-md) var(--space-lg);
   text-align: center;
-  background: linear-gradient(180deg, #616d1b 0%, #39530e 100%);
+  background: linear-gradient(180deg, #4a5414 0%, #2e440b 100%);
   color: var(--color-white);
 }
 
@@ -247,31 +243,28 @@ const cards = ref([
 }
 
 .corner-leaf {
-  position: absolute;
-  bottom: var(--space-md);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 18px;
-  height: 18px;
-  color: var(--color-accent);
-  opacity: 0.8;
-}
-
-.corner-leaf svg {
-  width: 100%;
-  height: 100%;
+  display: none;
 }
 
 .bg-arc {
   position: absolute;
-  top: 320px; /* adjust this — should sit just above where your cards start */
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #0F3B2D 0%, #0A2D22 100%);
-  border-radius: 50% 50% 0 0 / 70px 70px 0 0;
+  left: -5%;
+  right: -5%;
+  top: 300px;
+  bottom: -100px;
+
+  background: linear-gradient(
+    135deg,
+    #616d1b 0%,
+    #616d1b 50%,
+    #616d1b 100%
+  );
+
+  border-radius: 50% 50% 0 0 / 120px 120px 0 0;
+
   z-index: 0;
-} 
+  pointer-events: none;
+}
 
 @media (min-width: 900px) {
   .cards-grid {
