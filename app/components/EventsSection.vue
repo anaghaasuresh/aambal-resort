@@ -13,28 +13,57 @@
           borderRadius: frameRadius + 'px',
         }"
       >
-        <Transition name="cross-fade" mode="out-in">
-          <img :key="activeIndex" :src="current.image" :alt="current.title" class="frame-img" />
-        </Transition>
+        <Transition :name="slideDirection">
+  <img
+    :key="activeIndex"
+    :src="current.image"
+    :alt="current.title"
+    class="frame-img"
+  />
+</Transition>
 
         <div class="frame-overlay" :style="{ opacity: contentOpacity }"></div>
 
         <div class="frame-content" :style="{ opacity: contentOpacity }">
-          <Transition name="fade-slide" mode="out-in">
-            <div :key="activeIndex" class="panel-body">
-  <span class="panel-title">{{ current.title }}</span>
+         <Transition :name="slideDirection">
+  <div :key="activeIndex" class="event-slide">
 
-  <div class="feature-list">
-    <span
-      v-for="(point, i) in current.points"
-      :key="i"
-      class="feature-item"
+    <img
+      :src="current.image"
+      :alt="current.title"
+      class="frame-img"
+    />
+
+    <div
+      class="frame-overlay"
+      :style="{ opacity: contentOpacity }"
+    ></div>
+
+    <div
+      class="frame-content"
+      :style="{ opacity: contentOpacity }"
     >
-      {{ point }}
-    </span>
+      <div class="panel-body">
+
+        <span class="panel-title">
+          {{ current.title }}
+        </span>
+
+        <div class="feature-list">
+          <span
+            v-for="(point, i) in current.points"
+            :key="i"
+            class="feature-item"
+          >
+            {{ point }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
   </div>
-</div>
-          </Transition>
+</Transition>
 
           <button class="nav-arrow nav-left" @click="prevPanel" aria-label="Previous">‹</button>
           <button class="nav-arrow nav-right" @click="nextPanel" aria-label="Next">›</button>
@@ -45,7 +74,7 @@
               :key="panel.title"
               class="dot"
               :class="{ active: index === activeIndex }"
-              @click="activeIndex = index"
+              @click="goToPanel(index)"
               :aria-label="`Go to ${panel.title}`"
             ></button>
           </div>
@@ -63,6 +92,7 @@ import img3 from '~/assets/css/img/private.png'
 const activeIndex = ref(0)
 const sectionRef = ref(null)
 const scrollProgress = ref(0)
+const slideDirection = ref('slide-left')
 
 const panels = ref([
   {
@@ -98,10 +128,28 @@ const panels = ref([
 const current = computed(() => panels.value[activeIndex.value])
 
 function nextPanel() {
-  activeIndex.value = (activeIndex.value + 1) % panels.value.length
+  slideDirection.value = 'slide-left'
+
+  activeIndex.value =
+    (activeIndex.value + 1) % panels.value.length
 }
+
 function prevPanel() {
-  activeIndex.value = (activeIndex.value - 1 + panels.value.length) % panels.value.length
+  slideDirection.value = 'slide-right'
+
+  activeIndex.value =
+    (activeIndex.value - 1 + panels.value.length) %
+    panels.value.length
+}
+function goToPanel(index) {
+  if (index === activeIndex.value) return
+
+  slideDirection.value =
+    index > activeIndex.value
+      ? 'slide-left'
+      : 'slide-right'
+
+  activeIndex.value = index
 }
 
 // Scroll-driven expand: as the section scrolls through view, progress goes 0 -> 1
@@ -169,7 +217,7 @@ const contentOpacity = computed(() => {
   position: relative;
   height: 180vh; /* tall section so there's room to scroll through the expand effect */
   /* background: var(--color-primary-dark); */
-  background:#886220
+  background:#1d3f07
 }
 
 .events-sticky {
@@ -185,13 +233,13 @@ const contentOpacity = computed(() => {
 
 .events-heading {
   position: absolute;
-  top: 12%;
+  top: 10%;
   text-align: center;
   font-family: var(--font-heading);
-  font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+  font-size: clamp(1.5rem, 3.5vw, 3.1rem);
   font-weight: 500;
-  color: var(--color-white);
-  max-width: 800px;
+  color: #e5ffd3;
+  max-width: 900px;
   padding-inline: var(--space-md);
   z-index: 2;
   transition: opacity 0.1s linear;
@@ -350,27 +398,62 @@ const contentOpacity = computed(() => {
   transform: scale(1.3);
 }
 
-.cross-fade-enter-active,
-.cross-fade-leave-active {
-  transition: opacity 0.5s ease;
+
+/* ========================================
+   NEXT IMAGE
+   Current image moves LEFT
+   New image enters from RIGHT
+======================================== */
+
+.slide-left-enter-active,
+.slide-left-leave-active {
   position: absolute;
   inset: 0;
-}
-.cross-fade-enter-from,
-.cross-fade-leave-to {
-  opacity: 0;
+
+  transition: transform 1.4s cubic-bezier(0.77, 0, 0.18, 1);
 }
 
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: opacity 0.4s ease, transform 0.4s ease;
+.slide-left-enter-from {
+  transform: translateX(100%);
 }
-.fade-slide-enter-from {
-  opacity: 0;
-  transform: translateX(20px);
+
+.slide-left-leave-to {
+  transform: translateX(-100%);
 }
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateX(-20px);
+
+
+/* ========================================
+   PREVIOUS IMAGE
+   Current image moves RIGHT
+   Previous image enters from LEFT
+======================================== */
+
+.slide-right-enter-active,
+.slide-right-leave-active {
+  position: absolute;
+  inset: 0;
+
+  transition: transform 1.4s cubic-bezier(0.77, 0, 0.18, 1);
+}
+
+.slide-right-enter-from {
+  transform: translateX(-100%);
+}
+
+.slide-right-leave-to {
+  transform: translateX(100%);
+}
+
+
+/* ========================================
+   SLIDE CONTAINER
+======================================== */
+
+.event-slide {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
 }
 </style>
