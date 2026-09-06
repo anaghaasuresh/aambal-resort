@@ -4,5 +4,6 @@
     <AboutSection />
     <WhyChooseUs />
     <SpecialsSection />
+    <FacilitiesSection />
   </div>
 </template>
