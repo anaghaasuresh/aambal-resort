@@ -82,7 +82,7 @@ const filteredCategories = computed(() => {
 
 <style scoped>
 .facilities {
-  background: var(--color-cream);
+  background: #fff9d1;
   padding-block: var(--space-xl);
 }
 

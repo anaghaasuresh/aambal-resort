@@ -5,5 +5,6 @@
     <WhyChooseUs />
     <SpecialsSection />
     <FacilitiesSection />
+    <EventsSection />
   </div>
 </template>
