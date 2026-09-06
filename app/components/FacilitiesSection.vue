@@ -88,7 +88,7 @@ const filteredCategories = computed(() => {
 
 .section-header {
   text-align: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 1.5rem;
 }
 
 .eyebrow {
@@ -146,26 +146,28 @@ const filteredCategories = computed(() => {
 .facilities-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-md) var(--space-xl);
+  gap: var(--space-sm) var(--space-xl); /* was var(--space-md) — tighter vertical gap */
 }
 
 .facility-row {
-  padding-block: var(--space-sm);
+  padding-block: 0.4rem; /* was var(--space-sm) */
 }
 
 .row-header {
   display: flex;
   align-items: baseline;
   gap: var(--space-sm);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem; /* was 0.4rem */
+  flex-wrap: nowrap; /* ensure title never wraps to 2 lines */
 }
 
 .row-header h4 {
   font-family: var(--font-heading);
-  font-size: 1.2rem;
+  font-size: 1.1rem; /* slightly smaller, was 1.2rem */
   font-weight: 600;
   color: var(--color-primary-dark);
   white-space: nowrap;
+  flex-shrink: 0; /* title keeps its full width, never gets compressed */
 }
 
 .dots {
@@ -201,7 +203,7 @@ const filteredCategories = computed(() => {
 .tags {
   color: var(--color-text-muted);
   font-style: italic;
-  line-height: 1.8;
+  line-height: 1.5; 
   font-size: 0.95rem;
 }
 
