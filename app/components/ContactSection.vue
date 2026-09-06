@@ -4,14 +4,16 @@
 
     <div class="container contact-inner">
       <div class="section-header">
-        <span class="mini-logo" aria-hidden="true">
-          <svg viewBox="0 0 64 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.5">
-            <path d="M32 4C32 4 26 14 26 22C26 26.4 28.7 30 32 30C35.3 30 38 26.4 38 22C38 14 32 4 32 4Z"/>
-            <path d="M32 30C32 30 20 28 14 20C11 16 10 12 10 12C10 12 16 12 22 16C28 20 32 30 32 30Z"/>
-            <path d="M32 30C32 30 44 28 50 20C53 16 54 12 54 12C54 12 48 12 42 16C36 20 32 30 32 30Z"/>
-            <line x1="32" y1="30" x2="32" y2="36"/>
-          </svg>
-        </span>
+       <span class="mini-logo" aria-hidden="true">
+  <svg viewBox="0 0 64 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.5">
+    <path d="M32 4C32 4 26 14 26 22C26 26.4 28.7 30 32 30C35.3 30 38 26.4 38 22C38 14 32 4 32 4Z"/>
+    <path d="M32 30C32 30 20 28 14 20C11 16 10 12 10 12C10 12 16 12 22 16C28 20 32 30 32 30Z"/>
+    <path d="M32 30C32 30 44 28 50 20C53 16 54 12 54 12C54 12 48 12 42 16C36 20 32 30 32 30Z"/>
+    <path d="M32 30C32 30 24 32 18 30C14 28.5 12 26 12 26C12 26 17 24 23 25C28 26 32 30 32 30Z"/>
+    <path d="M32 30C32 30 40 32 46 30C50 28.5 52 26 52 26C52 26 47 24 41 25C36 26 32 30 32 30Z"/>
+    <line x1="32" y1="30" x2="32" y2="36"/>
+  </svg>
+</span>
         <h2>Contact <span class="accent">Us</span></h2>
         <p class="subtitle">
           Whether you have inquiries, special requests, or want to make reservations, this is your direct link to our dedicated team. Feel free to reach out via the provided contact details, and we'll be delighted to assist you in planning your dream getaway or event. Your journey with us begins here.
@@ -154,11 +156,15 @@ function handleSubmit() {
 .mini-logo {
   display: inline-flex;
   color: var(--color-accent);
-  width: 56px;
-  height: 36px;
+  width: 64px;
+  height: 52px;
   margin-bottom: var(--space-sm);
 }
-.mini-logo svg { width: 100%; height: 100%; }
+
+.mini-logo svg {
+  width: 100%;
+  height: 100%;
+}
 
 .section-header h2 {
   font-family: var(--font-heading);
@@ -262,10 +268,20 @@ function handleSubmit() {
 
 .form-field.full {
   margin-bottom: var(--space-lg);
+  padding-top: 1.6rem; /* room for the label above the box */
 }
 
-.form-field input,
-.form-field textarea {
+.form-field.full label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.form-field input {
   width: 100%;
   padding: 0.9rem 0;
   border: none;
@@ -277,36 +293,39 @@ function handleSubmit() {
   transition: border-color var(--duration-fast) var(--ease-smooth);
 }
 
-.form-field textarea {
-  resize: vertical;
-}
-
-.form-field input:focus,
-.form-field textarea:focus {
+.form-field input:focus {
   outline: none;
   border-bottom-color: var(--color-accent);
+}
+
+.form-field textarea {
+  width: 100%;
+  min-height: 100px;
+  max-height: 200px;
+  resize: vertical;
+  border: 1.5px solid rgba(47, 69, 56, 0.25);
+  border-radius: 6px;
+  padding: 0.9rem 0.8rem;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-primary-dark);
+  transition: border-color var(--duration-fast) var(--ease-smooth);
+}
+
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
 }
 
 .form-field label {
   position: absolute;
   top: 0.9rem;
   left: 0;
-  color: var(--color-text-muted);
+  color: var(--color-accent);
   font-size: 1rem;
   pointer-events: none;
   transition: all var(--duration-fast) var(--ease-smooth);
-}
-
-.form-field input:focus + label,
-.form-field input:not(:placeholder-shown) + label,
-.form-field input:valid + label,
-.form-field textarea:focus + label,
-.form-field textarea:valid + label {
-  top: -0.8rem;
-  font-size: 0.75rem;
-  color: var(--color-accent);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .btn-submit {
