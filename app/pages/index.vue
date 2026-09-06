@@ -7,5 +7,6 @@
     <FacilitiesSection />
     <EventsSection />
     <GallerySection />
+    <ContactSection />
   </div>
 </template>
