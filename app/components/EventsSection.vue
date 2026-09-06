@@ -217,7 +217,7 @@ const contentOpacity = computed(() => {
   position: relative;
   height: 180vh; /* tall section so there's room to scroll through the expand effect */
   /* background: var(--color-primary-dark); */
-  background:#1d3f07
+  background:#1d3f07;
 }
 
 .events-sticky {

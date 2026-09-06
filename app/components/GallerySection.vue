@@ -73,7 +73,7 @@ function endDrag() {
 
 <style scoped>
 .gallery {
-  background: var(--color-cream);
+  background:#1d3f07;
   padding-block: var(--space-xl) var(--space-lg);
   overflow: hidden;
 }
@@ -85,9 +85,9 @@ function endDrag() {
 
 .gallery-header h2 {
   font-family: var(--font-heading);
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: clamp(2rem, 4vw, 3.55rem);
   font-weight: 500;
-  color: var(--color-primary-dark);
+  color: #e5ffd3;
   margin-bottom: var(--space-sm);
 }
 
@@ -101,7 +101,7 @@ function endDrag() {
 }
 
 .subtitle {
-  color: var(--color-text-muted);
+  color: #afce9b;
   font-size: 1rem;
   max-width: 560px;
   margin: 0 auto;
@@ -128,8 +128,8 @@ function endDrag() {
 }
 
 .strip-img {
-  width: 320px;
-  height: 260px;
+  width: 620px; 
+  height: 460px;  
   object-fit: cover;
   flex-shrink: 0;
   pointer-events: none;
@@ -142,8 +142,8 @@ function endDrag() {
 
 @media (max-width: 600px) {
   .strip-img {
-    width: 220px;
-    height: 180px;
+    width: 300px; 
+    height: 230px;
   }
 }
 </style>
