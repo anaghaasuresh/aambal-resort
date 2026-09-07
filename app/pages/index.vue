@@ -8,5 +8,6 @@
     <EventsSection />
     <GallerySection />
     <ContactSection />
+    <Footer />
   </div>
 </template>

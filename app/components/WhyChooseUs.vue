@@ -1,5 +1,5 @@
 <template>
-  <section class="why-choose" id="why-choose">
+  <section class="why-choose" id="why-choose" ref="whyChooseSection">
    <div class="bg-arc" aria-hidden="true"></div>
     <div class="grain-overlay" aria-hidden="true"></div>
     <div class="container why-choose-inner">
@@ -22,8 +22,15 @@
         </p>
       </div>
 
-      <div class="cards-grid">
-        <div v-for="card in cards" :key="card.title" class="why-card">
+      <div
+  class="cards-grid"
+  :class="{ 'cards-visible': isCardsVisible }"
+>
+  <div
+    v-for="card in cards"
+    :key="card.title"
+    class="why-card"
+  >
           <div class="why-card-img">
             <img :src="card.image" :alt="card.title" />
           </div>
@@ -39,10 +46,16 @@
 </template>
 
 <script setup>
-// Swap these placeholder images for real event-space/river/relaxation photos when available
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+
 import img1 from '~/assets/css/img/aambal_main.png'
 import img2 from '~/assets/css/img/aambal_side.png'
 import img3 from '~/assets/css/img/aambal_side2.png'
+
+const whyChooseSection = ref(null)
+const isCardsVisible = ref(false)
+
+let observer
 
 const cards = ref([
   {
@@ -61,6 +74,32 @@ const cards = ref([
     image: img3,
   },
 ])
+
+onMounted(() => {
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        isCardsVisible.value = true
+
+        // Run animation only once
+        observer.unobserve(entry.target)
+      }
+    },
+    {
+      threshold: 0.25
+    }
+  )
+
+  if (whyChooseSection.value) {
+    observer.observe(whyChooseSection.value)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (observer && whyChooseSection.value) {
+    observer.unobserve(whyChooseSection.value)
+  }
+})
 </script>
 
 <style scoped>
@@ -162,11 +201,34 @@ const cards = ref([
   position: relative;
   border-radius: var(--radius);
   overflow: hidden;
-  transition: transform var(--duration-med) var(--ease-smooth);
+
   display: flex;
   flex-direction: column;
+
+  /* Animation initial state */
+  opacity: 0;
+  transform: translateY(70px);
+
+  transition:
+    opacity 1.5s ease,
+    transform 2.0s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cards-grid.cards-visible .why-card {
+  opacity: 1;
+  transform: translateY(0);
 }
 
+.cards-grid.cards-visible .why-card:nth-child(1) {
+  transition-delay: 0s;
+}
+
+.cards-grid.cards-visible .why-card:nth-child(2) {
+  transition-delay: 0.35s;
+}
+
+.cards-grid.cards-visible .why-card:nth-child(3) {
+  transition-delay: 0.7s;
+}
 .why-card:hover {
   transform: translateY(-6px);
 }
@@ -255,9 +317,9 @@ const cards = ref([
 
   background: linear-gradient(
     135deg,
-    #616d1b 0%,
-    #616d1b 50%,
-    #616d1b 100%
+    #6e7b24 0%,
+    #6e7b24 50%,
+    #6e7b24 100%
   );
 
   border-radius: 50% 50% 0 0 / 120px 120px 0 0;
@@ -265,7 +327,6 @@ const cards = ref([
   z-index: 0;
   pointer-events: none;
 }
-
 @media (min-width: 900px) {
   .cards-grid {
     grid-template-columns: repeat(3, 1fr);

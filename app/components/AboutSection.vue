@@ -1,5 +1,5 @@
 <template>
-  <section class="about" id="about">
+  <section class="about" id="about" ref="aboutSection">
     <div class="container about-grid">
       <div class="about-media" @click="playVideo">
   <img
@@ -34,46 +34,66 @@
   </div>
 </Transition>
 
-      <div class="about-content">
-        <span class="eyebrow">About Aambal Resort & Events</span>
+      <div
+  class="about-content"
+  :class="{ 'is-visible': isAboutVisible }"
+>
+  <!-- HEADING -->
+  <div class="reveal-heading">
+    <span class="eyebrow">About Aambal Resort & Events</span>
 
-        <h2>
-          Discover Tranquility at Our Riverside Resort with
-          <span class="highlight">Versatile Event Spaces & Charming Cottages.</span>
-        </h2>
+    <h2>
+      Discover Tranquility at Our Riverside Resort with
+      <span class="highlight">
+        Versatile Event Spaces & Charming Cottages.
+      </span>
+    </h2>
+  </div>
 
-        <p class="lead">
-          Nestled on the pristine banks of a picturesque river, our riverfront resort is a hidden gem offering a serene escape masterfully crafted by <strong>Nature Holidays and Events</strong>.
-        </p>
+  <!-- PARAGRAPHS -->
+  <div class="reveal-paragraphs">
+    <p class="lead">
+      Nestled on the pristine banks of a picturesque river, our riverfront resort is a hidden gem offering a serene escape masterfully crafted by
+      <strong>Nature Holidays and Events</strong>.
+    </p>
 
-        <p class="italic-text">
-          With charming cottages, we offer an intimate and exclusive retreat for those seeking tranquility. But that's not all — our resort is not just about relaxation; it's also a place for celebrations and gatherings.
-        </p>
+    <p class="italic-text">
+      With charming cottages, we offer an intimate and exclusive retreat for those seeking tranquility. But that's not all — our resort is not just about relaxation; it's also a place for celebrations and gatherings.
+    </p>
+  </div>
 
-        <ul class="feature-list">
-          <li>
-            <span class="check">✓</span>
-            Offers an intimate and peaceful getaway, where the soothing river melodies are your constant companion.
-          </li>
-          <li>
-            <span class="check">✓</span>
-            Hosting your special event at our resort means combining natural beauty with sophistication.
-          </li>
-          <li>
-            <span class="check">✓</span>
-            Experience the warmth of our charming cottages, each thoughtfully designed to provide comfort and style. Whether you're seeking a romantic retreat or a family vacation, our accommodations offer a home away from home.
-          </li>
-        </ul>
-      </div>
+  <!-- POINTS -->
+  <ul class="feature-list">
+    <li class="feature-item">
+      <span class="check">✓</span>
+      Offers an intimate and peaceful getaway, where the soothing river melodies are your constant companion.
+    </li>
+
+    <li class="feature-item">
+      <span class="check">✓</span>
+      Hosting your special event at our resort means combining natural beauty with sophistication.
+    </li>
+
+    <li class="feature-item">
+      <span class="check">✓</span>
+      Experience the warmth of our charming cottages, each thoughtfully designed to provide comfort and style. Whether you're seeking a romantic retreat or a family vacation, our accommodations offer a home away from home.
+    </li>
+  </ul>
+</div>
     </div>
   </section>
 </template>
 
 <script setup>
-// Swap this import for your actual aerial/riverside photo once available
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import aboutImage from '~/assets/css/img/aambal_vdo.png'
 
 const isVideoOpen = ref(false)
+
+const aboutSection = ref(null)
+const isAboutVisible = ref(false)
+
+let observer
 
 function playVideo() {
   isVideoOpen.value = true
@@ -82,20 +102,35 @@ function playVideo() {
 function closeVideo() {
   isVideoOpen.value = false
 }
+
+onMounted(() => {
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        isAboutVisible.value = true
+        observer.unobserve(entry.target)
+      }
+    },
+    {
+      threshold: 0.25
+    }
+  )
+
+  if (aboutSection.value) {
+    observer.observe(aboutSection.value)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (observer && aboutSection.value) {
+    observer.unobserve(aboutSection.value)
+  }
+})
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Quintessential&display=swap');
 
-/* .about {
-  background: linear-gradient(
-    135deg,
-    #143a0c 0%,
-    #636c2c 50%,
-    #143a0c 100%
-  );
-  padding-block: var(--space-xl);
-} */
 .about {
   background: linear-gradient(
     to right,
@@ -339,6 +374,74 @@ function closeVideo() {
   font-size: 0.75rem;
   font-weight: 700;
   margin-top: 0.15rem;
+}
+
+/* ========================================
+   ABOUT SECTION SCROLL ANIMATION
+======================================== */
+
+/* Initial hidden state */
+
+.reveal-heading,
+.reveal-paragraphs,
+.feature-item {
+  opacity: 0;
+  transform: translateY(50px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* =========================
+   FIRST — HEADING
+========================= */
+
+.about-content.is-visible .reveal-heading {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* =========================
+   SECOND — PARAGRAPHS
+========================= */
+
+.about-content.is-visible .reveal-paragraphs {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.45s;
+}
+
+
+/* =========================
+   THIRD — FEATURE POINTS
+========================= */
+
+.about-content.is-visible .feature-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* Point 1 */
+
+.about-content.is-visible .feature-item:nth-child(1) {
+  transition-delay: 0.9s;
+}
+
+
+/* Point 2 */
+
+.about-content.is-visible .feature-item:nth-child(2) {
+  transition-delay: 1.08s;
+}
+
+
+/* Point 3 */
+
+.about-content.is-visible .feature-item:nth-child(3) {
+  transition-delay: 1.26s;
 }
 
 @media (min-width: 900px) {

@@ -1,4 +1,5 @@
 <template>
+<div class="specials-background">
   <section class="specials" id="specials">
     <div class="grain-overlay" aria-hidden="true"></div>
     <div class="container specials-inner">
@@ -70,6 +71,7 @@
       </div>
     </div>
   </section>
+  </div>
 </template>
 
 <script setup>
@@ -146,11 +148,16 @@ const current = computed(() => tabs.value[activeIndex.value])
 </script>
 
 <style scoped>
+.specials-background {
+  background: #6e7b24; /* CHANGE THIS to the colour you want */
+  padding: 30px 0;
+}
 .specials {
   position: relative;
-  background: #fffb8b; 
+  background: #baca61; 
   padding-block: var(--space-xl);
   overflow: hidden;
+  border-radius: 50% / 12%;
 }
 
 .specials-inner {
@@ -165,7 +172,7 @@ const current = computed(() => tabs.value[activeIndex.value])
   height: 200%;
   z-index: 0;
   pointer-events: none;
-  opacity: 1.5;
+  opacity: 0.7;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain-shift 0.5s steps(4) infinite;
 }

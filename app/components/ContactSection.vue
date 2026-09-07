@@ -112,7 +112,13 @@ function handleSubmit() {
 <style scoped>
 .contact {
   position: relative;
-  background: var(--color-cream);
+  /* background: var(--color-cream); */
+  background: linear-gradient(
+    to right,
+    #e5dbad  10%,
+    #ffefa9 50%,
+    #e5dbad 100%
+  );
   padding-block: var(--space-xl);
   overflow: hidden;
 }
@@ -168,7 +174,7 @@ function handleSubmit() {
 
 .section-header h2 {
   font-family: var(--font-heading);
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: clamp(3rem, 5vw, 3.8rem);
   font-weight: 500;
   color: var(--color-primary-dark);
   margin-bottom: var(--space-sm);
@@ -185,6 +191,7 @@ function handleSubmit() {
 
 .subtitle {
   color: var(--color-text-muted);
+  font-size: clamp(0.8rem, 1.0vw, 1.4rem);
   line-height: 1.75;
 }
 

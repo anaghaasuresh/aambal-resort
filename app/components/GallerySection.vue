@@ -74,7 +74,8 @@ function endDrag() {
 <style scoped>
 .gallery {
   background:#1d3f07;
-  padding-block: var(--space-xl) var(--space-lg);
+  padding-top: var(--space-xl);
+  padding-bottom: 25vh;
   overflow: hidden;
 }
 

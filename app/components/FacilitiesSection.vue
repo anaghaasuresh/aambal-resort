@@ -82,7 +82,7 @@ const filteredCategories = computed(() => {
 
 <style scoped>
 .facilities {
-  background: #fff9d1;
+  background: #6e7b24;
   padding-block: var(--space-xl);
 }
 
@@ -99,7 +99,7 @@ const filteredCategories = computed(() => {
   font-family: var(--font-heading);
   font-size: clamp(2rem, 4vw, 2.75rem);
   font-weight: 500;
-  color: var(--color-primary-dark);
+  color: #ffffff;
 }
 
 .section-header h2 .accent {
@@ -125,7 +125,7 @@ const filteredCategories = computed(() => {
   border-radius: 999px;
   border: 1.5px solid var(--color-accent);
   background: transparent;
-  color: var(--color-primary-dark);
+  color: #f6f7f3;
   font-family: var(--font-body);
   font-size: 0.9rem;
   font-weight: 500;
@@ -165,7 +165,7 @@ const filteredCategories = computed(() => {
   font-family: var(--font-heading);
   font-size: 1.1rem; /* slightly smaller, was 1.2rem */
   font-weight: 600;
-  color: var(--color-primary-dark);
+  color: #f6f7f1;
   white-space: nowrap;
   flex-shrink: 0; /* title keeps its full width, never gets compressed */
 }
@@ -184,7 +184,7 @@ const filteredCategories = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-muted);
+  color: #f9f9f4;
   flex-shrink: 0;
   transition: all var(--duration-fast) var(--ease-smooth);
 }
@@ -201,7 +201,7 @@ const filteredCategories = computed(() => {
 }
 
 .tags {
-  color: var(--color-text-muted);
+  color: #ced898;
   font-style: italic;
   line-height: 1.5; 
   font-size: 0.95rem;

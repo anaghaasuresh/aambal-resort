@@ -215,8 +215,7 @@ const contentOpacity = computed(() => {
 @import url('https://fonts.googleapis.com/css2?family=Tangerine:wght@400;700&display=swap');
 .events {
   position: relative;
-  height: 180vh; /* tall section so there's room to scroll through the expand effect */
-  /* background: var(--color-primary-dark); */
+  height: 180vh; 
   background:#1d3f07;
 }
 
