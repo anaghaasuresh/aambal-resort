@@ -1,458 +1,292 @@
 <template>
-  <section class="events" id="events" ref="sectionRef">
-    <div class="events-sticky">
-      <h2 class="events-heading" :style="{ opacity: headingOpacity }">
-        Organize Your <span class="accent">Events</span>, "Where Memorable Moments Find Their Perfect Venue"
-      </h2>
-
-      <div
-        class="expand-frame"
-        :style="{
-          width: frameWidth + '%',
-          height: frameHeight + 'vh',
-          borderRadius: frameRadius + 'px',
-        }"
-      >
-        <Transition :name="slideDirection">
-  <img
-    :key="activeIndex"
-    :src="current.image"
-    :alt="current.title"
-    class="frame-img"
-  />
-</Transition>
-
-        <div class="frame-overlay" :style="{ opacity: contentOpacity }"></div>
-
-        <div class="frame-content" :style="{ opacity: contentOpacity }">
-         <Transition :name="slideDirection">
-  <div :key="activeIndex" class="event-slide">
-
-    <img
-      :src="current.image"
-      :alt="current.title"
-      class="frame-img"
-    />
-
-    <div
-      class="frame-overlay"
-      :style="{ opacity: contentOpacity }"
-    ></div>
-
-    <div
-      class="frame-content"
-      :style="{ opacity: contentOpacity }"
-    >
-      <div class="panel-body">
-
-        <span class="panel-title">
-          {{ current.title }}
-        </span>
-
-        <div class="feature-list">
-          <span
-            v-for="(point, i) in current.points"
-            :key="i"
-            class="feature-item"
-          >
-            {{ point }}
-          </span>
-        </div>
-
-      </div>
+  <section class="events" id="events">
+    <div class="events-bg">
+      <img
+        v-for="(slide, index) in slides"
+        :key="'bg-' + slide.id"
+        :src="slide.image"
+        class="bg-img"
+        :class="{ 'bg-active': slotOffset(index) === 0 }"
+      />
+      <div class="bg-overlay"></div>
     </div>
 
-  </div>
-</Transition>
+    <div class="carousel" :class="{ 'arrows-active': arrowsVisible }">
+      <button class="arrow arrow-left" @click="prev" aria-label="Previous">‹</button>
 
-          <button class="nav-arrow nav-left" @click="prevPanel" aria-label="Previous">‹</button>
-          <button class="nav-arrow nav-right" @click="nextPanel" aria-label="Next">›</button>
-
-          <div class="dot-nav">
-            <button
-              v-for="(panel, index) in panels"
-              :key="panel.title"
-              class="dot"
-              :class="{ active: index === activeIndex }"
-              @click="goToPanel(index)"
-              :aria-label="`Go to ${panel.title}`"
-            ></button>
-          </div>
+      <div
+        v-for="(slide, index) in slides"
+        :key="slide.id"
+        class="card"
+        :class="slotClass(index)"
+        :style="cardStyle(index)"
+        @mousemove="slotOffset(index) === 0 ? handleMouseMove($event) : null"
+        @mouseleave="slotOffset(index) === 0 ? resetTilt() : null"
+        @click="slotOffset(index) === 0 ? toggleArrows() : null"
+      >
+        <div class="card-img-wrap">
+          <img class="card-img" :src="slide.image" :alt="slide.title" />
         </div>
       </div>
+
+      <Transition name="fade-text">
+        <div v-if="centerSlide" :key="centerSlide.id" class="events-text-overlay">
+          <span class="tag">Organize Your Events</span>
+          <h2>{{ centerSlide.title }}</h2>
+          <div class="feature-list">
+            <span v-for="(point, i) in centerSlide.points" :key="i" class="feature-item">
+              {{ point }}
+            </span>
+          </div>
+        </div>
+      </Transition>
+
+      <button class="arrow arrow-right" @click="next" aria-label="Next">›</button>
     </div>
   </section>
 </template>
 
 <script setup>
-import img1 from '~/assets/css/img/birthday.png'
-import img2 from '~/assets/css/img/custom.png'
-import img3 from '~/assets/css/img/private.png'
+import img1 from '~/assets/css/img/aambal_mainn.png'
+import img2 from '~/assets/css/img/aambal_sidee.png'
+import img3 from '~/assets/css/img/aambal_side22.png'
+
+const slides = ref([
+  { id: 1, image: img1, title: 'Birthday Parties', points: ['Scenic Venue', 'Curated Dining', 'Personalised Service'] },
+  { id: 2, image: img2, title: 'Private Parties', points: ['Elegant Spaces', 'Fine Dining', 'Expert Coordination'] },
+  { id: 3, image: img3, title: 'Custom Parties', points: ['Bespoke Planning', 'Curated Dining', 'Seamless Coordination'] },
+])
 
 const activeIndex = ref(0)
-const sectionRef = ref(null)
-const scrollProgress = ref(0)
-const slideDirection = ref('slide-left')
+const tiltX = ref(0)
+const tiltY = ref(0)
+const isTilting = ref(false)
+const arrowsVisible = ref(false)
+const wrappingId = ref(null)
+const wrapDirection = ref(null)
 
-const panels = ref([
-  {
-    title: 'Birthday Parties',
-    points: [
-      'Scenic Venue',
-      'Curated Dining',
-      'Personalised Service',
-    ],
-    image: img1,
-  },
+const centerSlide = computed(() => slides.value.find((_, i) => slotOffset(i) === 0))
 
-  {
-    title: 'Private Parties',
-    points: [
-      'Elegant Spaces',
-      'Fine Dining',
-      'Expert Coordination',
-    ],
-    image: img2,
-  },
-
-  {
-    title: 'Custom Parties',
-    points: [
-      'Bespoke Planning',
-      'Curated Dining',
-      'Seamless Coordination',
-    ],
-    image: img3,
-  },
-])
-const current = computed(() => panels.value[activeIndex.value])
-
-function nextPanel() {
-  slideDirection.value = 'slide-left'
-
-  activeIndex.value =
-    (activeIndex.value + 1) % panels.value.length
+function toggleArrows() {
+  arrowsVisible.value = !arrowsVisible.value
 }
 
-function prevPanel() {
-  slideDirection.value = 'slide-right'
-
-  activeIndex.value =
-    (activeIndex.value - 1 + panels.value.length) %
-    panels.value.length
-}
-function goToPanel(index) {
-  if (index === activeIndex.value) return
-
-  slideDirection.value =
-    index > activeIndex.value
-      ? 'slide-left'
-      : 'slide-right'
-
-  activeIndex.value = index
+function next() {
+  const wrapping = slides.value.find((_, i) => slotOffset(i) === -1)
+  if (wrapping) {
+    wrappingId.value = wrapping.id
+    wrapDirection.value = 'forward'
+  }
+  activeIndex.value = (activeIndex.value + 1) % slides.value.length
+  setTimeout(() => { wrappingId.value = null }, 900)
 }
 
-// Scroll-driven expand: as the section scrolls through view, progress goes 0 -> 1
-function handleScroll() {
-  if (!sectionRef.value) return
-  const rect = sectionRef.value.getBoundingClientRect()
-  const sectionHeight = sectionRef.value.offsetHeight
-  const viewportHeight = window.innerHeight
-
-  // total scrollable distance within this section (section is taller than viewport)
-  const scrollableDistance = sectionHeight - viewportHeight
-  const scrolled = -rect.top
-
-  let progress = scrolled / scrollableDistance
-  progress = Math.max(0, Math.min(1, progress))
-  scrollProgress.value = progress
+function prev() {
+  const wrapping = slides.value.find((_, i) => slotOffset(i) === 1)
+  if (wrapping) {
+    wrappingId.value = wrapping.id
+    wrapDirection.value = 'backward'
+  }
+  activeIndex.value = (activeIndex.value - 1 + slides.value.length) % slides.value.length
+  setTimeout(() => { wrappingId.value = null }, 900)
 }
 
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll, { passive: true })
-  handleScroll()
-})
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
+function slotOffset(index) {
+  const len = slides.value.length
+  let offset = index - activeIndex.value
+  if (offset > len / 2) offset -= len
+  if (offset < -len / 2) offset += len
+  return offset
+}
 
-// Derived values driven by scroll progress
-// Make the animation complete very quickly
-const fastProgress = computed(() => {
-  return Math.min(scrollProgress.value * 2.2, 1)
-})
+function slotClass(index) {
+  const offset = slotOffset(index)
+  if (offset === 0) return 'is-center'
+  if (offset === -1) return 'is-left'
+  if (offset === 1) return 'is-right'
+  return 'is-hidden'
+}
 
-// Image expands quickly to fullscreen
-const frameWidth = computed(() => {
-  return 45 + fastProgress.value * 55
-})
+function cardStyle(index) {
+  const offset = slotOffset(index)
+  const isCenter = offset === 0
+  const isWrapping = slides.value[index].id === wrappingId.value
 
-const frameHeight = computed(() => {
-  return 45 + fastProgress.value * 55
-})
+  const baseTransform = {
+    '-1': 'translateX(-60%) scale(0.8) rotateY(15deg)',
+    '0': `translateX(0) scale(1) rotateY(${tiltY.value}deg) rotateX(${tiltX.value}deg)`,
+    '1': 'translateX(60%) scale(0.8) rotateY(-15deg)',
+  }[offset] || 'translateX(0) scale(0.6)'
 
-// Rounded corners disappear quickly
-const frameRadius = computed(() => {
-  return 24 - fastProgress.value * 24
-})
+  return {
+    transform: baseTransform,
+    zIndex: isWrapping ? 1 : (isCenter ? 3 : 2),
+    opacity: Math.abs(offset) > 1 ? 0 : 1,
+    transition: isCenter && isTilting.value
+      ? 'transform 0.1s ease-out, opacity 0.9s'
+      : 'transform 0.9s var(--ease-smooth), opacity 0.9s var(--ease-smooth)',
+  }
+}
 
-// Heading fades away early
-const headingOpacity = computed(() => {
-  return Math.max(0, 1 - fastProgress.value * 1.8)
-})
+function handleMouseMove(e) {
+  isTilting.value = true
+  const card = e.currentTarget
+  const rect = card.getBoundingClientRect()
+  const x = e.clientX - rect.left
+  const y = e.clientY - rect.top
+  let deltaX = (x - rect.width / 2) / (rect.width / 2)
+  let deltaY = (y - rect.height / 2) / (rect.height / 2)
+  deltaX = Math.max(-1, Math.min(1, deltaX))
+  deltaY = Math.max(-1, Math.min(1, deltaY))
+  const maxAngle = 12
+  tiltY.value = -deltaX * maxAngle
+  tiltX.value = deltaY * maxAngle
+}
 
-// Content appears after fullscreen is reached
-const contentOpacity = computed(() => {
-  return Math.max(
-    0,
-    (fastProgress.value - 0.75) / 0.25
-  )
-})
+function resetTilt() {
+  isTilting.value = false
+  tiltX.value = 0
+  tiltY.value = 0
+}
 </script>
+
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Italiana&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Tangerine:wght@400;700&display=swap');
 .events {
   position: relative;
-  height: 180vh; 
-  background:#1d3f07;
-}
-
-.events-sticky {
-  position: sticky;
-  top: 0;
   height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  background: var(--color-primary-dark);
   overflow: hidden;
 }
 
-.events-heading {
+.events-bg {
   position: absolute;
-  top: 10%;
-  text-align: center;
-  font-family: var(--font-heading);
-  font-size: clamp(1.5rem, 3.5vw, 3.1rem);
-  font-weight: 500;
-  color: #e5ffd3;
-  max-width: 900px;
-  padding-inline: var(--space-md);
-  z-index: 2;
-  transition: opacity 0.1s linear;
+  inset: 0;
+  z-index: 0;
 }
 
-.events-heading .accent {
-  font-style: italic;
-  background: linear-gradient(90deg, #F7DD9A 0%, #C79C52 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.expand-frame {
-  position: relative;
-  overflow: hidden;
-  transition: border-radius 0.1s linear;
-}
-
-.frame-img {
+.bg-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease-smooth);
 }
+.bg-active { opacity: 1; }
 
-.frame-overlay {
+.bg-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(10, 15, 12, 0.6);
-  transition: opacity 0.3s ease;
+  background: rgba(28, 43, 33, 0.75);
+  backdrop-filter: blur(2px);
 }
 
-.frame-content { 
-  position: absolute; 
-  inset: 0; 
-
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  justify-content: flex-end; 
-
-  padding-left: var(--space-lg);
-  padding-right: var(--space-lg);
-  padding-bottom: 18vh;
-
-  transition: opacity 0.3s ease; 
-  pointer-events: none; 
+.carousel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1100px;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
 }
 
-.frame-content > * {
+.carousel:hover .arrow,
+.carousel.arrows-active .arrow {
+  opacity: 1;
   pointer-events: auto;
 }
 
-.panel-title {
-  display: block;
-
-  font-family: 'Cormorant Garamond', serif !important;
-  font-weight: 400;
-
-  font-size: clamp(2.8rem, 5vw, 4.5rem);
-
-  color: #f3c577;
-
-  margin-bottom: 1.5rem;
-  line-height: 0.95;
+.card {
+  position: absolute;
+  width: 650px;
+  height: 750px;
+  border-radius: var(--radius);
+  transition: transform var(--duration-slow) var(--ease-smooth),
+              opacity var(--duration-slow) var(--ease-smooth);
+  transform-style: preserve-3d;
 }
-.panel-body {
-  max-width: 800px;
+
+.card-img-wrap {
   width: 100%;
+  height: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.is-center { z-index: 3; }
+
+.events-text-overlay {
+  position: absolute;
+  bottom: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150%;
+  max-width: 900px;
   text-align: center;
+  z-index: 4;
   color: var(--color-white);
 }
 
-.panel-body h3 {
-  font-family: var(--font-body);
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--color-white);
-  border-bottom: 2px solid var(--color-accent);
+.tag {
   display: inline-block;
-  padding-bottom: 0.35rem;
-  margin-bottom: 0;
+  border: 1px solid var(--color-white);
+  padding: 0.2rem 0.6rem;
+  font-size: var(--fs-small);
+  margin-bottom: var(--space-sm);
+}
+
+.events-text-overlay h2 {
+  font-family: var(--font-heading);
+  color: var(--color-white);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-style: italic;
+  margin-bottom: var(--space-sm);
 }
 
 .feature-list {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: clamp(1.5rem, 4vw, 4rem);
-
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.feature-list li {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.95rem;
-
-  white-space: nowrap;
+  gap: clamp(1.5rem, 4vw, 3rem);
 }
 
 .feature-item {
-  font-family: 'Tangerine', cursive !important;
-  font-weight: 700;
-
-  color: rgba(248, 238, 216, 0.95);
-
-  font-size: clamp(1rem, 2vw, 2rem);
-
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
   white-space: nowrap;
-  line-height: 1;
 }
 
+.fade-text-enter-active, .fade-text-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-text-enter-from, .fade-text-leave-to { opacity: 0; }
 
-.nav-arrow {
+.arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 5;
   font-size: 2rem;
   color: var(--color-white);
-  z-index: 3;
-  transition: transform var(--duration-fast) var(--ease-bounce);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-med) var(--ease-smooth),
+              transform var(--duration-fast) var(--ease-bounce);
 }
-
-.nav-arrow:hover {
-  transform: translateY(-50%) scale(1.2);
-}
-
-.nav-left { left: var(--space-md); }
-.nav-right { right: var(--space-md); }
-
-.dot-nav {
-  position: absolute;
-  bottom: var(--space-md);
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.5rem;
-}
-
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  transition: all var(--duration-fast) var(--ease-smooth);
-}
-
-.dot.active {
-  background: linear-gradient(135deg, #F7DD9A 0%, #C79C52 100%);
-  transform: scale(1.3);
-}
-
-
-/* ========================================
-   NEXT IMAGE
-   Current image moves LEFT
-   New image enters from RIGHT
-======================================== */
-
-.slide-left-enter-active,
-.slide-left-leave-active {
-  position: absolute;
-  inset: 0;
-
-  transition: transform 1.4s cubic-bezier(0.77, 0, 0.18, 1);
-}
-
-.slide-left-enter-from {
-  transform: translateX(100%);
-}
-
-.slide-left-leave-to {
-  transform: translateX(-100%);
-}
-
-
-/* ========================================
-   PREVIOUS IMAGE
-   Current image moves RIGHT
-   Previous image enters from LEFT
-======================================== */
-
-.slide-right-enter-active,
-.slide-right-leave-active {
-  position: absolute;
-  inset: 0;
-
-  transition: transform 1.4s cubic-bezier(0.77, 0, 0.18, 1);
-}
-
-.slide-right-enter-from {
-  transform: translateX(-100%);
-}
-
-.slide-right-leave-to {
-  transform: translateX(100%);
-}
-
-
-/* ========================================
-   SLIDE CONTAINER
-======================================== */
-
-.event-slide {
-  position: absolute;
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-}
+.arrow:hover { transform: translateY(-50%) scale(1.2); }
+.arrow-left { left: var(--space-sm); }
+.arrow-right { right: var(--space-sm); }
 </style>

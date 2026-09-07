@@ -1,344 +1,226 @@
 <template>
-  <section class="hero">
-    <div class="hero-bg">
-    <img
-      v-for="(slide, index) in slides"
-      :key="'bg-' + slide.id"
-      :src="slide.image"
-      class="bg-img"
-      :class="{ 'bg-active': slotOffset(index) === 0 }"
-    />
-    <div class="bg-overlay"></div>
-  </div>
+  <section class="hero" id="hero" ref="sectionRef">
+    <div class="hero-sticky">
+      <div class="logo-wrap" :style="{ opacity: headingOpacity }">
+        <img :src="aambalLogo" alt="Aambal Resort" class="hero-logo" />
+      </div>
 
-    <div class="carousel" :class="{ 'arrows-active': arrowsVisible }">
-  <button class="arrow arrow-left" @click="prev" aria-label="Previous">‹</button>
+      <div
+        class="expand-frame"
+        :style="{
+          width: frameWidth + '%',
+          height: frameHeight + 'vh',
+          borderRadius: frameRadius + 'px',
+        }"
+      >
+        <Transition :name="slideDirection">
+          <div :key="activeIndex" class="hero-slide">
+            <img :src="current.image" :alt="current.title" class="frame-img" />
+            <div class="frame-overlay" :style="{ opacity: contentOpacity }"></div>
+            <div class="frame-content" :style="{ opacity: contentOpacity }">
+              <h1>{{ current.title }}</h1>
+            </div>
+          </div>
+        </Transition>
 
-  <div
-  v-for="(slide, index) in slides"
-  :key="slide.id"
-  class="card"
-  :class="slotClass(index)"
-  :style="cardStyle(index)"
-  @mousemove="slotOffset(index) === 0 ? handleMouseMove($event) : null"
-  @mouseleave="slotOffset(index) === 0 ? resetTilt() : null"
-  @click="slotOffset(index) === 0 ? toggleArrows() : null"
->
-  <div class="card-img-wrap">
-    <img class="card-img" :src="slide.image" :alt="slide.title" />
-  </div>
-  <div v-if="slotOffset(index) === 0" class="card-content">
-    <span v-if="slide.isLogo" class="tag logo-tag">
-  <img :src="slide.tag" alt="Aambal" />
-</span>
+        <button class="nav-arrow nav-left" @click="prevPanel" aria-label="Previous">‹</button>
+        <button class="nav-arrow nav-right" @click="nextPanel" aria-label="Next">›</button>
 
-<span v-else class="tag">
-  {{ slide.tag }}
-</span>
-    <h1>{{ slide.title }}</h1>
-    <p>{{ slide.subtitle }}</p>
-  </div>
-</div>
-
-  <!-- Text now OUTSIDE the card, overlaid on top of the whole carousel -->
-  <Transition name="fade-text">
-    <div v-if="centerSlide" :key="centerSlide.id" class="hero-text-overlay">
-      <span class="tag">{{ centerSlide.tag }}</span>
-      <h1>{{ centerSlide.title }}</h1>
-      <p>{{ centerSlide.subtitle }}</p>
+        <div class="dot-nav">
+          <button
+            v-for="(slide, index) in slides"
+            :key="slide.id"
+            class="dot"
+            :class="{ active: index === activeIndex }"
+            @click="goToPanel(index)"
+            :aria-label="`Go to ${slide.title}`"
+          ></button>
+        </div>
+      </div>
     </div>
-  </Transition>
-
-  <button class="arrow arrow-right" @click="next" aria-label="Next">›</button>
-</div>
   </section>
 </template>
 
 <script setup>
-
-import hero1 from '~/assets/css/img/aambal_mainn.png'
-import hero2 from '~/assets/css/img/aambal_sidee.png'
-import hero3 from '~/assets/css/img/aambal_side22.png' 
-
+import img1 from '~/assets/css/img/aambal_mainn.png'
+import img2 from '~/assets/css/img/aambal_sidee.png'
+import img3 from '~/assets/css/img/aambal_side22.png'
 import aambalLogo from '~/assets/css/img/aambal_logo1.png'
-const centerSlide = computed(() => {
-  return slides.value.find((_, i) => slotOffset(i) === 0)
-})
-
-const arrowsVisible = ref(false)
-
-function toggleArrows() {
-  arrowsVisible.value = !arrowsVisible.value
-}
-
-const slides = ref([
-  {
-    id: 1,
-    image: hero1,
-    tag: aambalLogo,
-    isLogo: true,
-    title: 'Embrace the Serenity',
-  },
-
-  {
-    id: 2,
-    image: hero2,
-    isLogo: false,
-    title: 'Nature Meets Luxury',
-  },
-
-  {
-    id: 3,
-    image: hero3,
-    isLogo: false,
-    title: 'Tranquility on the water',
-  },
-])
 
 const activeIndex = ref(0)
-const tiltX = ref(0)
-const tiltY = ref(0)
-const isTilting = ref(false)
+const sectionRef = ref(null)
+const scrollProgress = ref(0)
+const slideDirection = ref('slide-left')
 
-const wrappingId = ref(null)
-const wrapDirection = ref(null)
+const slides = ref([
+  { id: 1, image: img1, title: 'Embrace the Serenity' },
+  { id: 2, image: img2, title: 'Nature Meets Luxury' },
+  { id: 3, image: img3, title: 'Tranquility on the water' },
+])
 
-function next() {
-  const wrapping = slides.value.find((_, i) => slotOffset(i) === -1)
-  if (wrapping) {
-    wrappingId.value = wrapping.id
-    wrapDirection.value = 'forward'
-  }
+const current = computed(() => slides.value[activeIndex.value])
+
+function nextPanel() {
+  slideDirection.value = 'slide-left'
   activeIndex.value = (activeIndex.value + 1) % slides.value.length
-  setTimeout(() => { wrappingId.value = null }, 900)
 }
-
-function prev() {
-  const wrapping = slides.value.find((_, i) => slotOffset(i) === 1)
-  if (wrapping) {
-    wrappingId.value = wrapping.id
-    wrapDirection.value = 'backward'
-  }
+function prevPanel() {
+  slideDirection.value = 'slide-right'
   activeIndex.value = (activeIndex.value - 1 + slides.value.length) % slides.value.length
-  setTimeout(() => { wrappingId.value = null }, 900)
+}
+function goToPanel(index) {
+  if (index === activeIndex.value) return
+  slideDirection.value = index > activeIndex.value ? 'slide-left' : 'slide-right'
+  activeIndex.value = index
 }
 
-// how far this slide is from the active one: -1 = left, 0 = center, 1 = right
-function slotOffset(index) {
-  const len = slides.value.length
-  let offset = index - activeIndex.value
-  if (offset > len / 2) offset -= len
-  if (offset < -len / 2) offset += len
-  return offset
+function handleScroll() {
+  if (!sectionRef.value) return
+  const rect = sectionRef.value.getBoundingClientRect()
+  const sectionHeight = sectionRef.value.offsetHeight
+  const viewportHeight = window.innerHeight
+  const scrollableDistance = sectionHeight - viewportHeight
+  const scrolled = -rect.top
+  let progress = scrolled / scrollableDistance
+  progress = Math.max(0, Math.min(1, progress))
+  scrollProgress.value = progress
 }
 
-function slotClass(index) {
-  const offset = slotOffset(index)
-  if (offset === 0) return 'is-center'
-  if (offset === -1) return 'is-left'
-  if (offset === 1) return 'is-right'
-  return 'is-hidden'
-}
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  handleScroll()
+})
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 
-function cardStyle(index) {
-  const offset = slotOffset(index)
-  const isCenter = offset === 0
-  const isWrapping = slides.value[index].id === wrappingId.value
-
-  const baseTransform = {
-    '-1': 'translateX(-60%) scale(0.8) rotateY(15deg)',
-    '0': `translateX(0) scale(1) rotateY(${tiltY.value}deg) rotateX(${tiltX.value}deg)`,
-    '1': 'translateX(60%) scale(0.8) rotateY(-15deg)',
-  }[offset] || 'translateX(0) scale(0.6)'
-
-  return {
-    transform: baseTransform,
-    zIndex: isWrapping ? 1 : (isCenter ? 3 : 2),
-    opacity: Math.abs(offset) > 1 ? 0 : 1,
-    transition: isCenter && isTilting.value
-      ? 'transform 0.1s ease-out, opacity 0.9s'
-      : 'transform 0.9s var(--ease-smooth), opacity 0.9s var(--ease-smooth)',
-  }
-}
-
-function handleMouseMove(e) {
-  isTilting.value = true
-  const card = e.currentTarget
-  const rect = card.getBoundingClientRect()
-  const x = e.clientX - rect.left
-  const y = e.clientY - rect.top
-  let deltaX = (x - rect.width / 2) / (rect.width / 2)
-  let deltaY = (y - rect.height / 2) / (rect.height / 2)
-
-  deltaX = Math.max(-1, Math.min(1, deltaX))
-  deltaY = Math.max(-1, Math.min(1, deltaY))
-
-  const maxAngle = 12
-  tiltY.value = -deltaX * maxAngle
-  tiltX.value = deltaY * maxAngle
-}
-
-function resetTilt() {
-  isTilting.value = false
-  tiltX.value = 0
-  tiltY.value = 0
-}
+const fastProgress = computed(() => Math.min(scrollProgress.value * 2.2, 1))
+const frameWidth = computed(() => 45 + fastProgress.value * 55)
+const frameHeight = computed(() => 45 + fastProgress.value * 55)
+const frameRadius = computed(() => 24 - fastProgress.value * 24)
+const headingOpacity = computed(() => Math.max(0, 1 - fastProgress.value * 1.8))
+const contentOpacity = computed(() => Math.max(0, (fastProgress.value - 0.75) / 0.25))
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Yesteryear&display=swap');
 .hero {
   position: relative;
+  height: 180vh;
+  background: var(--color-primary-dark);
+}
+
+.hero-sticky {
+  position: sticky;
+  top: 0;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--color-primary-dark);
   overflow: hidden;
 }
 
-.hero-bg {
+.logo-wrap {
   position: absolute;
-  inset: 0;
-  z-index: 0;
+  top: 10%;
+  z-index: 2;
+  transition: opacity 0.1s linear;
 }
 
-.bg-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 1.2s var(--ease-smooth);
+.hero-logo {
+  height: 90px;
+  width: auto;
 }
 
-.bg-active {
-  opacity: 1;
-}
-
-.bg-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(28, 43, 33, 0.75);
-  backdrop-filter: blur(2px);
-}
-
-.carousel {
+.expand-frame {
   position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 1100px;
-  height: 600px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 1200px;
-  top:40px;
-}
-
-.carousel:hover .arrow,
-.carousel.arrows-active .arrow {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.card {
-  position: absolute;
-  width: 650px;
-  height: 750px;
-  border-radius: var(--radius);
-  /* no overflow here — text needs to spill past this box */
-  transition: transform var(--duration-slow) var(--ease-smooth),
-              opacity var(--duration-slow) var(--ease-smooth);
-  transform-style: preserve-3d;
-}
-
-.card-img-wrap {
-  width: 100%;
-  height: 100%;
-  border-radius: var(--radius);
   overflow: hidden;
+  transition: border-radius 0.1s linear;
 }
 
-.card-img {
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.frame-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.is-center {
-  z-index: 3;
-}
-
-.card-content {
-  position: absolute;
-  bottom: 23%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 150%;
-  max-width: 900px;
-  text-align: center;
-  z-index: 4;
-  color: var(--color-white);
-}
-
-/* LOGO ONLY — no box */
-.logo-tag {
-  border: none;
-  padding: 0;
-  background: transparent;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  top: -160px;
-}
-
-.logo-tag img {
-  width: 400px;
-  height: auto;
   display: block;
 }
 
-
-.card-content h1 {
-  font-family: 'Yesteryear', cursive;
-  /* color: #fffaa4; */
-  color: #f7f17e;
-  font-size: clamp(3rem, 5vw, 5rem);
-  font-weight: 100;
-  text-transform: none;
-  letter-spacing: 0.1em;
-  line-height: 1.1;
-  margin-bottom: var(--space-sm);
+.frame-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 15, 12, 0.5);
+  transition: opacity 0.3s ease;
 }
 
-.card-content p {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1.1rem;
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  line-height: 1.6;
+.frame-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
-.arrow {
+.frame-content h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-style: italic;
+  color: var(--color-white);
+  text-align: center;
+}
+
+.nav-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 5;
   font-size: 2rem;
   color: var(--color-white);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--duration-med) var(--ease-smooth),
-              transform var(--duration-fast) var(--ease-bounce);
+  z-index: 3;
+  transition: transform var(--duration-fast) var(--ease-bounce);
+}
+.nav-arrow:hover { transform: translateY(-50%) scale(1.2); }
+.nav-left { left: var(--space-md); }
+.nav-right { right: var(--space-md); }
+
+.dot-nav {
+  position: absolute;
+  bottom: var(--space-md);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 3;
 }
 
-.arrow:hover {
-  transform: translateY(-50%) scale(1.2);
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transition: all var(--duration-fast) var(--ease-smooth);
+}
+.dot.active {
+  background: linear-gradient(135deg, #F7DD9A 0%, #C79C52 100%);
+  transform: scale(1.3);
 }
 
-.arrow-left { left: var(--space-sm); }
-.arrow-right { right: var(--space-sm); }
+.slide-left-enter-active, .slide-left-leave-active,
+.slide-right-enter-active, .slide-right-leave-active {
+  position: absolute;
+  inset: 0;
+  transition: transform 1.4s cubic-bezier(0.77, 0, 0.18, 1);
+}
+.slide-left-enter-from { transform: translateX(100%); }
+.slide-left-leave-to { transform: translateX(-100%); }
+.slide-right-enter-from { transform: translateX(-100%); }
+.slide-right-leave-to { transform: translateX(100%); }
 </style>

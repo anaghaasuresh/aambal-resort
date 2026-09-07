@@ -2,10 +2,6 @@
   <footer class="footer">
 
     <!-- Decorative top line -->
-    <!-- Decorative curved top -->
-<div class="footer-top-wave" aria-hidden="true"></div>
-<div class="footer-top-glow" aria-hidden="true"></div>
-
     <div class="container footer-content">
 
       <!-- =====================
@@ -16,28 +12,8 @@
 
         <div class="footer-logo">
           <div class="logo-icon">
-            <svg
-              viewBox="0 0 64 64"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M32 8C32 8 24 20 24 30C24 36 27.5 40 32 40C36.5 40 40 36 40 30C40 20 32 8 32 8Z"
-              />
-
-              <path
-                d="M32 40C32 40 17 36 10 25C7 20 7 15 7 15C7 15 16 16 23 22C29 27 32 40 32 40Z"
-              />
-
-              <path
-                d="M32 40C32 40 47 36 54 25C57 20 57 15 57 15C57 15 48 16 41 22C35 27 32 40 32 40Z"
-              />
-
-              <path
-                d="M32 40V54"
-              />
-            </svg>
-          </div>
+  <img :src="logo" alt="Aambal Resort Logo" />
+</div>
 
           <div>
             <h2>Aambal</h2>
@@ -206,7 +182,19 @@
 
   </footer>
 </template>
+
+<script setup>
+import logo from '~/assets/css/img/aamballogoonly.png'
+</script>
+
 <style scoped>
+
+.logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
 
 .footer {
   position: relative;
@@ -226,76 +214,11 @@
 
   color: #f5efd7;
 
-  padding-top: 7rem;
+  padding-top: 4rem;
 
   overflow: hidden;
 }
 
-/* =========================
-   TOP GOLD LINE
-========================= */
-
-/* ========================================
-   CURVED LUXURY TOP DESIGN
-======================================== */
-
-.footer-top-wave {
-  position: absolute;
-
-  top: -75px;
-  left: -5%;
-
-  width: 110%;
-  height: 115px;
-
-  background: linear-gradient(
-    90deg,
-    #d8b95f 0%,
-    #f8e8a4 25%,
-    #fff3bd 50%,
-    #efd98a 75%,
-    #c99e4f 100%
-  );
-
-  border-radius:
-    0 0 50% 50%
-    / 0 0 100% 100%;
-
-  transform: rotate(1.5deg);
-
-  z-index: 0;
-
-  box-shadow:
-    0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-
-/* Soft gold glow below the wave */
-
-.footer-top-glow {
-  position: absolute;
-
-  top: 30px;
-  left: 50%;
-
-  width: 70%;
-  height: 80px;
-
-  transform: translateX(-50%);
-
-  background: radial-gradient(
-    ellipse,
-    rgba(247, 221, 154, 0.22) 0%,
-    rgba(247, 221, 154, 0.08) 45%,
-    transparent 75%
-  );
-
-  filter: blur(20px);
-
-  pointer-events: none;
-
-  z-index: 0;
-}
 
 
 /* =========================
