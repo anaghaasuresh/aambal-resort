@@ -2,24 +2,39 @@
   <section class="hero" id="hero" ref="sectionRef">
     <div class="hero-sticky">
       <div class="logo-wrap" :style="{ opacity: headingOpacity }">
-        <img :src="aambalLogo" alt="Aambal Resort" class="hero-logo" />
-      </div>
+  <h1 class="hero-heading">
+    Discover An<br />
+    Infinite Escape
+  </h1>
 
-      <div
-        class="expand-frame"
-        :style="{
-          width: frameWidth + '%',
-          height: frameHeight + 'vh',
-          borderRadius: frameRadius + 'px',
-        }"
-      >
+  <div class="aambal-script">
+    Aambal Resorts & Events
+  </div>
+</div>
+
+      <div 
+  class="expand-frame" 
+  :style="{ 
+    width: frameWidth + '%', 
+    height: frameHeight + 'vh', 
+    borderRadius: frameRadius + 'px',
+    transform: `translateY(${framePosition}px)`,
+  }" 
+>
         <Transition :name="slideDirection">
           <div :key="activeIndex" class="hero-slide">
             <img :src="current.image" :alt="current.title" class="frame-img" />
             <div class="frame-overlay" :style="{ opacity: contentOpacity }"></div>
             <div class="frame-content" :style="{ opacity: contentOpacity }">
-              <h1>{{ current.title }}</h1>
-            </div>
+  <img
+    v-if="activeIndex === 0"
+    :src="aambalLogo"
+    alt="Aambal Resort"
+    class="slide-aambal-logo"
+  />
+
+  <h1>{{ current.title }}</h1>
+</div>
           </div>
         </Transition>
 
@@ -51,6 +66,8 @@ const activeIndex = ref(0)
 const sectionRef = ref(null)
 const scrollProgress = ref(0)
 const slideDirection = ref('slide-left')
+const wheelCount = ref(0)
+let lastWheelTime = 0
 
 const slides = ref([
   { id: 1, image: img1, title: 'Embrace the Serenity' },
@@ -73,6 +90,42 @@ function goToPanel(index) {
   slideDirection.value = index > activeIndex.value ? 'slide-left' : 'slide-right'
   activeIndex.value = index
 }
+function handleWheel(event) {
+  // Only react to downward scrolling
+  if (event.deltaY <= 0) return
+
+  // Only start slide scrolling after the hero image
+  // has completely expanded
+  if (fastProgress.value < 1) return
+
+  // Make sure the hero section is currently active
+  if (!sectionRef.value) return
+
+  const rect = sectionRef.value.getBoundingClientRect()
+
+  if (rect.top > 0 || rect.bottom < window.innerHeight) return
+
+  const now = Date.now()
+
+  // Prevent one physical scroll gesture from being counted
+  // multiple times
+  if (now - lastWheelTime < 300) return
+
+  lastWheelTime = now
+
+  // Stop the page temporarily while changing slides
+  if (activeIndex.value < slides.value.length - 1) {
+    event.preventDefault()
+
+    wheelCount.value++
+
+    // Change slide after 2 scroll actions
+    if (wheelCount.value >= 2) {
+      wheelCount.value = 0
+      nextPanel()
+    }
+  }
+}
 
 function handleScroll() {
   if (!sectionRef.value) return
@@ -88,54 +141,90 @@ function handleScroll() {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
+
+  window.addEventListener('wheel', handleWheel, {
+    passive: false
+  })
+
   handleScroll()
 })
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+
+  window.removeEventListener('wheel', handleWheel)
 })
 
 const fastProgress = computed(() => Math.min(scrollProgress.value * 2.2, 1))
-const frameWidth = computed(() => 45 + fastProgress.value * 55)
+const frameWidth = computed(() => 70 + fastProgress.value * 30)
 const frameHeight = computed(() => 45 + fastProgress.value * 55)
-const frameRadius = computed(() => 24 - fastProgress.value * 24)
+const frameRadius = computed(() => 0)
 const headingOpacity = computed(() => Math.max(0, 1 - fastProgress.value * 1.8))
 const contentOpacity = computed(() => Math.max(0, (fastProgress.value - 0.75) / 0.25))
+/* NEW — image starts lower */
+const framePosition = computed(() => {
+  return 140 * (1 - fastProgress.value)
+})
 </script>
 
-<style scoped>
+<style scoped> 
+
+@import url('https://fonts.googleapis.com/css2?family=Allura&family=Great+Vibes&display=swap');
+
+.aambal-script {
+  margin-top: 3.5rem;
+  font-family: "Allura", "Great Vibes", cursive;
+  font-size: clamp(2.2rem, 4vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1;
+  color: #e3feda;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
 .hero {
   position: relative;
-  height: 180vh;
+  height: 260vh;
   background: var(--color-primary-dark);
 }
 
-.hero-sticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+.hero-sticky { 
+  position: sticky; 
+  top: 0; 
+  height: 100vh; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: flex-end; 
+  overflow: hidden; 
 }
 
 .logo-wrap {
   position: absolute;
-  top: 10%;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 2;
+  text-align: center;
   transition: opacity 0.1s linear;
+  pointer-events: none;
 }
 
-.hero-logo {
-  height: 90px;
-  width: auto;
+.hero-heading {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 5vw, 5.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  color: #f4f1e8;
+  letter-spacing: -0.03em;
 }
 
-.expand-frame {
-  position: relative;
-  overflow: hidden;
-  transition: border-radius 0.1s linear;
+.expand-frame { 
+  position: relative; 
+  overflow: hidden; 
+  border-radius: 0;
+  flex-shrink: 0;
 }
 
 .hero-slide {
@@ -163,11 +252,28 @@ const contentOpacity = computed(() => Math.max(0, (fastProgress.value - 0.75) / 
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: var(--space-lg);
   transition: opacity 0.3s ease;
   pointer-events: none;
+}
+
+.slide-aambal-logo {
+  position: absolute;
+
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: clamp(220px, 20vw, 350px);
+  height: auto;
+
+  object-fit: contain;
+  z-index: 5;
+
+  margin: 0;
 }
 
 .frame-content h1 {
