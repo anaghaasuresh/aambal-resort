@@ -91,38 +91,78 @@ function goToPanel(index) {
   activeIndex.value = index
 }
 function handleWheel(event) {
-  // Only react to downward scrolling
-  if (event.deltaY <= 0) return
-
-  // Only start slide scrolling after the hero image
-  // has completely expanded
-  if (fastProgress.value < 1) return
-
-  // Make sure the hero section is currently active
   if (!sectionRef.value) return
 
   const rect = sectionRef.value.getBoundingClientRect()
 
-  if (rect.top > 0 || rect.bottom < window.innerHeight) return
+  // Check whether the sticky hero is currently occupying the screen
+  const heroIsActive =
+    rect.top <= 10 &&
+    rect.bottom > window.innerHeight
+
+  if (!heroIsActive) return
+
+  // Don't interfere while the image is still expanding
+  if (fastProgress.value < 0.98) return
 
   const now = Date.now()
 
-  // Prevent one physical scroll gesture from being counted
-  // multiple times
-  if (now - lastWheelTime < 300) return
-
-  lastWheelTime = now
-
-  // Stop the page temporarily while changing slides
-  if (activeIndex.value < slides.value.length - 1) {
+  // Prevent one fast scroll gesture from triggering multiple actions
+  if (now - lastWheelTime < 500) {
     event.preventDefault()
+    return
+  }
 
-    wheelCount.value++
+  /*
+    SCROLLING DOWN
+  */
+  if (event.deltaY > 0) {
 
-    // Change slide after 2 scroll actions
-    if (wheelCount.value >= 2) {
-      wheelCount.value = 0
-      nextPanel()
+    // If we are NOT on the last slide, lock page scrolling
+    if (activeIndex.value < slides.value.length - 1) {
+      event.preventDefault()
+
+      wheelCount.value++
+
+      if (wheelCount.value >= 2) {
+        wheelCount.value = 0
+        lastWheelTime = now
+
+        nextPanel()
+      }
+
+      return
+    }
+
+    /*
+      LAST SLIDE:
+      Allow scrolling to the next section only after
+      the last slide has been reached.
+    */
+    if (activeIndex.value === slides.value.length - 1) {
+      return
+    }
+  }
+
+  /*
+    SCROLLING UP
+  */
+  if (event.deltaY < 0) {
+
+    // If we are on slide 2 or 3, lock the page
+    if (activeIndex.value > 0) {
+      event.preventDefault()
+
+      wheelCount.value--
+
+      if (wheelCount.value <= -2) {
+        wheelCount.value = 0
+        lastWheelTime = now
+
+        prevPanel()
+      }
+
+      return
     }
   }
 }
@@ -154,7 +194,9 @@ onUnmounted(() => {
   window.removeEventListener('wheel', handleWheel)
 })
 
-const fastProgress = computed(() => Math.min(scrollProgress.value * 2.2, 1))
+const fastProgress = computed(() =>
+  Math.min(scrollProgress.value * 3.5, 1)
+)
 const frameWidth = computed(() => 70 + fastProgress.value * 30)
 const frameHeight = computed(() => 45 + fastProgress.value * 55)
 const frameRadius = computed(() => 0)
@@ -173,7 +215,7 @@ const framePosition = computed(() => {
 .aambal-script {
   margin-top: 3.5rem;
   font-family: "Allura", "Great Vibes", cursive;
-  font-size: clamp(2.2rem, 4vw, 4.5rem);
+  font-size: clamp(3.2rem, 5vw, 5.5rem);
   font-weight: 400;
   line-height: 1;
   color: #e3feda;
@@ -184,7 +226,7 @@ const framePosition = computed(() => {
 
 .hero {
   position: relative;
-  height: 260vh;
+  height: 400vh;
   background: var(--color-primary-dark);
 }
 
@@ -213,7 +255,7 @@ const framePosition = computed(() => {
 .hero-heading {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(3rem, 5vw, 5.5rem);
+  font-size: clamp(1rem, 3vw, 3.5rem);
   font-weight: 400;
   line-height: 1.05;
   color: #f4f1e8;

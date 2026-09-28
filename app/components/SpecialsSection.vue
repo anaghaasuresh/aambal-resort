@@ -149,7 +149,8 @@ const current = computed(() => tabs.value[activeIndex.value])
 
 <style scoped>
 .specials-background {
-  background: #6e7b24; /* CHANGE THIS to the colour you want */
+  /* background: #6e7b24; */
+   background: #0d2c07;/* CHANGE THIS to the colour you want */
   padding: 30px 0;
 }
 .specials {

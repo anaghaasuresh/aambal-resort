@@ -47,9 +47,9 @@
 </template>
 
 <script setup>
-import img1 from '~/assets/css/img/aambal_mainn.png'
-import img2 from '~/assets/css/img/aambal_sidee.png'
-import img3 from '~/assets/css/img/aambal_side22.png'
+import img1 from '~/assets/css/img/birthday.png'
+import img2 from '~/assets/css/img/custom.png'
+import img3 from '~/assets/css/img/private.png'
 
 const slides = ref([
   { id: 1, image: img1, title: 'Birthday Parties', points: ['Scenic Venue', 'Curated Dining', 'Personalised Service'] },

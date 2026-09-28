@@ -6,29 +6,31 @@
     </div>
 
     <div
-      class="filmstrip-wrap"
-      @mousedown="startDrag"
-      @mousemove="onDrag"
-      @mouseup="endDrag"
-      @mouseleave="endDrag"
-      @touchstart="startDrag"
-      @touchmove="onDrag"
-      @touchend="endDrag"
+      ref="scroller"
+      class="strip-scroller"
+      :class="{ 'is-dragging': isDragging }"
+      @pointerdown="onPointerDown"
+      @pointermove="onPointerMove"
+      @pointerup="endDrag"
+      @pointercancel="endDrag"
     >
-      <div
-        class="filmstrip"
-        :class="{ 'auto-scroll': !isDragging }"
-        :style="{ transform: `translateX(${offsetX}px)` }"
-      >
-        <img
-          v-for="(photo, i) in loopedPhotos"
-          :key="i"
-          :src="photo"
-          class="strip-img"
-          draggable="false"
-          alt="Aambal Resort"
-        />
-      </div>
+      <img
+        v-for="(photo, i) in photos"
+        :key="i"
+        :src="photo"
+        class="strip-img"
+        draggable="false"
+        alt="Aambal Resort"
+      />
+    </div>
+
+    <div class="gallery-controls">
+      <button class="arrow-btn" aria-label="Previous photos" @click="scrollStrip(-1)">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+      </button>
+      <button class="arrow-btn" aria-label="Next photos" @click="scrollStrip(1)">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+      </button>
     </div>
   </section>
 </template>
@@ -42,33 +44,37 @@ import img3 from '~/assets/css/img/aambal_side2.png'
 // Reusing the 3 available images to fill out the 10-photo strip for now.
 const photos = ref([img1, img2, img3, img1, img2, img3, img1, img2, img3, img1])
 
-// duplicate the set once so the loop can scroll seamlessly
-const loopedPhotos = computed(() => [...photos.value, ...photos.value])
+const scroller = ref(null)
 
-const offsetX = ref(0)
+function scrollStrip(direction) {
+  const el = scroller.value
+  if (!el) return
+  el.scrollBy({ left: direction * el.clientWidth * 0.7, behavior: 'smooth' })
+}
+
 const isDragging = ref(false)
-const startX = ref(0)
-const startOffset = ref(0)
+let startX = 0
+let startScroll = 0
 
-function getX(e) {
-  return e.touches ? e.touches[0].clientX : e.clientX
-}
-
-function startDrag(e) {
+function onPointerDown(e) {
+  if (e.pointerType !== 'mouse') return      // touch already scrolls natively
   isDragging.value = true
-  startX.value = getX(e)
-  startOffset.value = offsetX.value
+  startX = e.clientX
+  startScroll = scroller.value.scrollLeft
+  scroller.value.setPointerCapture(e.pointerId)
 }
 
-function onDrag(e) {
+function onPointerMove(e) {
   if (!isDragging.value) return
-  const delta = getX(e) - startX.value
-  offsetX.value = startOffset.value + delta
+  scroller.value.scrollLeft = startScroll - (e.clientX - startX)
 }
 
-function endDrag() {
+function endDrag(e) {
+  if (!isDragging.value) return
   isDragging.value = false
+  scroller.value.releasePointerCapture(e.pointerId)
 }
+
 </script>
 
 <style scoped>
@@ -109,42 +115,75 @@ function endDrag() {
   line-height: 1.7;
 }
 
-.filmstrip-wrap {
-  overflow: hidden;
+.strip-scroller {
+  display: flex;
+  overflow-x: auto;
+  padding: 3rem 0;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
   cursor: grab;
   user-select: none;
 }
 
-.filmstrip-wrap:active {
+.strip-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.strip-scroller.is-dragging {
   cursor: grabbing;
-}
-
-.filmstrip {
-  display: flex;
-  width: max-content;
-}
-
-.filmstrip.auto-scroll {
-  animation: scroll-left 40s linear infinite;
+  scroll-snap-type: none;
 }
 
 .strip-img {
-  width: 620px; 
-  height: 460px;  
+  width: 620px;
+  height: 460px;
   object-fit: cover;
   flex-shrink: 0;
   pointer-events: none;
+
+  border-radius: 28px;        /* the rounded corners */
+  margin-right: 48px;         /* the gap between cards */
+  scroll-snap-align: start;
 }
 
-@keyframes scroll-left {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+.strip-img:nth-child(5n + 2) {
+  width: 900px;
+}
+
+.gallery-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.arrow-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid rgba(229, 255, 211, 0.35);
+  background: transparent;
+  color: #e5ffd3;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: border-color 0.25s, color 0.25s;
+}
+
+.arrow-btn:hover {
+  border-color: #E9BF6F;
+  color: #E9BF6F;
 }
 
 @media (max-width: 600px) {
   .strip-img {
-    width: 300px; 
+    width: 300px;
     height: 230px;
+    border-radius: 20px;
+    margin-right: 24px;
+  }
+
+  .strip-img:nth-child(5n + 2) {
+    width: 420px;
   }
 }
 </style>

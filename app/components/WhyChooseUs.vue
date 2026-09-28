@@ -185,7 +185,7 @@ onBeforeUnmount(() => {
 
 .subtitle {
   color: #e9e3c4;
-  font-size: 1rem;
+  font-size: 1.15rem;
   line-height: 1.7;
 }
 
@@ -315,12 +315,8 @@ onBeforeUnmount(() => {
   top: 300px;
   bottom: -100px;
 
-  background: linear-gradient(
-    135deg,
-    #6e7b24 0%,
-    #6e7b24 50%,
-    #6e7b24 100%
-  );
+  background: 
+    #0d2c07;
 
   border-radius: 50% 50% 0 0 / 120px 120px 0 0;
 

@@ -47,6 +47,7 @@
 <script setup>
 const activeFilter = ref('all')
 
+
 const filters = ref([
   { id: 'all', label: 'Show All' },
   { id: 'general', label: 'General' },
@@ -82,7 +83,7 @@ const filteredCategories = computed(() => {
 
 <style scoped>
 .facilities {
-  background: #6e7b24;
+  background: #0d2c07;
   padding-block: var(--space-xl);
 }
 
